@@ -4,9 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon  src/server.js",
-    "exercice1": " nodemon exercice1/server.js",
+    "dev": "nodemon src/server.js",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed": "node src/db/seed.js"
