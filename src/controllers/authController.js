@@ -25,8 +25,7 @@ export const register = async (req, res) => {
             id: usersTable.id,
             email: usersTable.email,
             firstName: usersTable.firstName,
-            lastName: usersTable.lastName,
-            admin: usersTable.admin
+            lastName: usersTable.lastName
         });
         
         const token = jwt.sign(
@@ -76,6 +75,7 @@ export const login = async (req, res) => {
         }
 
         delete user.password;
+        delete user.admin;
         
         const token = jwt.sign(
             {
