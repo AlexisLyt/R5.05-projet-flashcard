@@ -24,7 +24,9 @@ export const register = async (req, res) => {
         }).returning({
             id: usersTable.id,
             email: usersTable.email,
-            username: usersTable.username
+            firstName: usersTable.firstName,
+            lastName: usersTable.lastName,
+            admin: usersTable.admin
         });
         
         const token = jwt.sign(
@@ -87,7 +89,7 @@ export const login = async (req, res) => {
         res.status(201).json({
             message: "User logged in",
             user,
-            token: token
+            token
         });
     } catch (error) {
         console.error(error);
