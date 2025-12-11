@@ -1,3 +1,6 @@
+# modifications schema bdd (supprimer ce paragraphe)
+Flashcard.latest_date (remplacé par revision.latest_date)
+User.created_at
 # R5.05-projet-flashcard
 Final group project of R5.05 - Advanced programming on creating a Restful API for managing flashcards
 ### 👨‍🦱 Authors
