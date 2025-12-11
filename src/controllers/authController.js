@@ -98,3 +98,23 @@ export const login = async (req, res) => {
         });
     }
 };
+
+export const getUserInfos = async (req, res) => {
+    try {
+        const userId = req.user.userId;
+
+        const [result] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+
+        delete result.password;
+        delete result.admin;
+
+        res.status(200).send({
+            message: "User fetched",
+            user: result
+        });
+    } catch (error) {
+        res.status(500).json({
+            error: "Failed to fetch user"
+        });
+    }
+};
