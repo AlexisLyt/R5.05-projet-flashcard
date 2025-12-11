@@ -1,12 +1,15 @@
 import { request, response } from "express";
 import jwt from "jsonwebtoken";
+import { usersTable } from "../db/schema.js";
+import { eq } from "drizzle-orm";
+import { db } from "../db/database.js";
 
 /**
  * @param {request} req 
  * @param {response} res 
  * @param {Function} next 
  */
-export const authenticateToken = (req, res, next) => {
+export const authenticateToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     const token = authHeader?.split(" ")[1];
 
@@ -16,6 +19,10 @@ export const authenticateToken = (req, res, next) => {
 
     try {
         const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decodedToken.userId;
+
+        const [result] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+        req.user = { userId, admin: result.admin };
 
         next();
     } catch (error) {
