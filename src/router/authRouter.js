@@ -1,11 +1,9 @@
-import { Router } from 'express';
-import { login, register } from '../controllers/authController.js';
-import { validateBody } from '../middleware/validation.js';
-import { registerSchema, loginSchema } from '../models/auth.js';
+import { Router } from "express"
 
-const router = Router();
+const router = Router()
 
-router.post('/register', validateBody(registerSchema), register);
-router.post('/login', validateBody(loginSchema), login);
+router.post("/register", () => console.log("register")) //TODO : registerUser
+router.post("/login", () => console.log("login")) //TODO : loginUser
+router.get("/", () => console.log("get user infos")) //TODO : getUserInfos
 
-export default router;
+export default router
