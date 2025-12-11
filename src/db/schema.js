@@ -45,8 +45,32 @@ export const flashcardsTable = sqliteTable('flashcard', {
     back: text().notNull(),
 
     description: text(),
+
+    urlFront: text('url_front'),
+
+    urlBack: text('url_back'),
     
     visibility: text({enum : ['public', 'prive']})
                 .notNull()
                 .default('prive'),
+})
+
+export const levelsTable = sqliteTable('level', {
+    id: integer()
+        .primaryKey(),
+
+    revisionPeriod: integer('revision_period').notNull(),
+})
+
+export const revisionTable = sqliteTable('revision', {
+
+    idUser: text('id_user').references(() => usersTable.$inferInsert.id, { onDelete: 'cascade'}).primaryKey(),
+
+    idLevel: text('id_level').references(() => levelsTable.$inferInsert.id, { onDelete: 'cascade'}).primaryKey(),
+
+    idFlashcard: text('id_flashcard').references(() => flashcardsTable.$inferInsert.id, { onDelete: 'cascade'}).primaryKey(),
+
+    latestDate: integer('latest_date', {mode: 'timestamp'})
+                .notNull()
+                .$defaultFn(() => new Date()),
 })
