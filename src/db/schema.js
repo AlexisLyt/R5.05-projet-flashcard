@@ -32,9 +32,9 @@ export const collectionsTable = sqliteTable('collection', {
 
     description: text(),
     
-    visibility: text({enum : ['public', 'prive']})
+    visibility: text({enum : ['public', 'private']})
                 .notNull()
-                .default('prive'),
+                .default('private'),
 })
 
 export const flashcardsTable = sqliteTable('flashcard', {
