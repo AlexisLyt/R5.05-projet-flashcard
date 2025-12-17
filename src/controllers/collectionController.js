@@ -42,7 +42,7 @@ export const getCollection = async (req, res) => {
 export const createCollection = async (req, res) => {
     try {
         const newCollection = req.body;
-
+        newCollection.idUser = req.user.userId;
         const result = await db.insert(collectionsTable).values(newCollection).returning();
 
         res.status(201).json({
