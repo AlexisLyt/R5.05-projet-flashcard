@@ -78,7 +78,7 @@ async function seed() {
 			{
                 idUser: insertedusers[1].id,
                 title: "alexis",
-                visibility: "prive",
+                visibility: "private",
 			},
 			{
                 idUser: insertedusers[2].id,
