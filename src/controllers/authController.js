@@ -103,10 +103,17 @@ export const getUserInfos = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [result] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+        const [result] = await db.select({
+            id: usersTable.id,
+            email: usersTable.email,
+            firstName: usersTable.firstName,
+            lastName: usersTable.lastName
+        }).from(usersTable).where(eq(usersTable.id, userId));
 
+        /*
         delete result.password;
         delete result.admin;
+        */
 
         res.status(200).send({
             message: "User fetched",
