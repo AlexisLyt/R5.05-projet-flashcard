@@ -9,8 +9,16 @@ import { db } from "../db/database.js"
  */
 export const createFlashcard = async (req, res) => {
     const { frontText, backText, frontUrl, backUrl, collection } = req.body
+    frontUrl = frontUrl ||null
+    backUrl = backUrl || null
     try {
-       await db.insert(flashcardsTable)
+        await db.insert(flashcardsTable).values({
+            front : frontText,
+            back : backText,
+            urlFront : frontUrl,
+            urlBack : backUrl,
+            idCollection : collection
+        })
 
 
     } catch (error) {
