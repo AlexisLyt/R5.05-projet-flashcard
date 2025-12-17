@@ -13,8 +13,12 @@ export const usersTable = sqliteTable('user', {
     lastName: text('last_name', { length: 30 }).notNull(),
 
     password: text({ length: 255 }).notNull(),
+
+    createdAt: integer('created_at', {mode: 'timestamp'})
+                .notNull()
+                .$defaultFn(() => new Date()),
     
-    admin: integer({mode : 'boolean'}).notNull(),
+    admin: integer({mode : 'boolean'}).notNull().default(false),
 })
 
 export const collectionsTable = sqliteTable('collection', {
@@ -22,15 +26,15 @@ export const collectionsTable = sqliteTable('collection', {
         .primaryKey()
         .$defaultFn(() => randomUUID()),
 
-    idUser: text('id_user').references(() => usersTable.$inferInsert.id, { onDelete: 'cascade'}),
+    idUser: text('id_user').references(() => usersTable.id, { onDelete: 'cascade'}),
 
     title: text({ length: 255 }).notNull(),
 
     description: text(),
     
-    visibility: text({enum : ['public', 'prive']})
+    visibility: text({enum : ['public', 'private']})
                 .notNull()
-                .default('prive'),
+                .default('private'),
 })
 
 export const flashcardsTable = sqliteTable('flashcard', {
@@ -38,21 +42,15 @@ export const flashcardsTable = sqliteTable('flashcard', {
         .primaryKey()
         .$defaultFn(() => randomUUID()),
 
-    idCollection: text('id_collection').references(() => collectionsTable.$inferInsert.id, { onDelete: 'cascade'}),
+    idCollection: text('id_collection').references(() => collectionsTable.id, { onDelete: 'cascade'}),
 
     front: text().notNull(),
 
     back: text().notNull(),
 
-    description: text(),
-
     urlFront: text('url_front'),
 
     urlBack: text('url_back'),
-    
-    visibility: text({enum : ['public', 'prive']})
-                .notNull()
-                .default('prive'),
 })
 
 export const levelsTable = sqliteTable('level', {
@@ -62,13 +60,16 @@ export const levelsTable = sqliteTable('level', {
     revisionPeriod: integer('revision_period').notNull(),
 })
 
-export const revisionTable = sqliteTable('revision', {
+export const revisionsTable = sqliteTable('revision', {
+    id: text()
+        .primaryKey()
+        .$defaultFn(() => randomUUID()),
 
-    idUser: text('id_user').references(() => usersTable.$inferInsert.id, { onDelete: 'cascade'}).primaryKey(),
+    idUser: text('id_user').references(() => usersTable.id, { onDelete: 'cascade'}).notNull(),
 
-    idLevel: text('id_level').references(() => levelsTable.$inferInsert.id, { onDelete: 'cascade'}).primaryKey(),
+    idLevel: integer('id_level').references(() => levelsTable.id, { onDelete: 'cascade'}).notNull(),
 
-    idFlashcard: text('id_flashcard').references(() => flashcardsTable.$inferInsert.id, { onDelete: 'cascade'}).primaryKey(),
+    idFlashcard: text('id_flashcard').references(() => flashcardsTable.id, { onDelete: 'cascade'}).notNull(),
 
     latestDate: integer('latest_date', {mode: 'timestamp'})
                 .notNull()
