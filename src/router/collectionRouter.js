@@ -1,14 +1,20 @@
-import { Router } from "express";
+import { Router } from 'express';
+import { createCollection, deleteCollection, getUserCollections, getCollection, updateCollection } from '../controllers/collectionController.js';
+import { validateBody, validateParams } from '../middleware/validation.js';
+import { authenticateToken } from '../middleware/authenticateToken.js';
+import { createCollectionSchema, collectionIdSchema, updateCollectionSchema } from '../models/collection.js';
+import searchRoutes from './searchRouter.js';
 
-const router = Router()
+const router = Router();
 
-//TODO : middleware
+router.use(authenticateToken);
 
-router.get("/", () => console.log("get user collections")) //TODO : getUserCollections
-router.get("/:id", () => console.log("get collection")) //TODO : getCollection
-router.post("/", () => console.log("create collection")) //TODO : createCollection
-router.get("/search/", () => console.log("search collection")) //TODO : searchCollection
-router.patch("/:id", () => console.log("update collection")) //TODO : updateCollection
-router.delete("/:id", () => console.log("delete collection")) //TODO : deleteCollection
+router.use("/search", searchRoutes);
 
-export default router
+router.get("/", getUserCollections);
+router.get("/:id", validateParams(collectionIdSchema), getCollection);
+router.post("/", validateBody(createCollectionSchema), createCollection);
+router.patch("/:id", validateParams(collectionIdSchema), validateBody(updateCollectionSchema), updateCollection);
+router.delete("/:id", validateParams(collectionIdSchema), deleteCollection);
+
+export default router;

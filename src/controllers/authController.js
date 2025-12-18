@@ -12,7 +12,7 @@ import "dotenv/config";
  */
 export const register = async (req, res) => {
     try {
-        const { email, username, password } = req.body;
+        const { email, firstName, lastName, password } = req.body;
         const hashedPassword = await bcrypt.hash(password, 12);
         
         const [result] = await db.insert(usersTable).values({
@@ -25,7 +25,8 @@ export const register = async (req, res) => {
             id: usersTable.id,
             email: usersTable.email,
             firstName: usersTable.firstName,
-            lastName: usersTable.lastName
+            lastName: usersTable.lastName,
+            createdAt: usersTable.createdAt
         });
         
         const token = jwt.sign(
@@ -103,10 +104,17 @@ export const getUserInfos = async (req, res) => {
     try {
         const userId = req.user.userId;
 
-        const [result] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+        const [result] = await db.select({
+            id: usersTable.id,
+            email: usersTable.email,
+            firstName: usersTable.firstName,
+            lastName: usersTable.lastName
+        }).from(usersTable).where(eq(usersTable.id, userId));
 
+        /*
         delete result.password;
         delete result.admin;
+        */
 
         res.status(200).send({
             message: "User fetched",
