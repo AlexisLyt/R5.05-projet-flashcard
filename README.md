@@ -17,3 +17,6 @@ Run `npm run dev`
 ## 🛢️ Database initialisation :
 - **Create database** : `npm run db:push`
 - **Seed database** : `npm run seed`
+## Technical Documentation
+- please this site 😭 : https://markdownlivepreview.com/
+  
