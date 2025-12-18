@@ -14,3 +14,11 @@ export const editFlashCardSchema = z.object({
     frontUrl : z.url().nullish(),
     backUrl : z.url().nullish()
 })
+
+export const reviseSchema = z.object({
+    level : z.int().min(1).max(5).nullish()
+})
+
+export const idSchema = z.object({
+    id : z.uuid()
+})
