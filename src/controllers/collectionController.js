@@ -65,9 +65,15 @@ export const deleteCollection = async (req, res) => {
         const userId = req.user.userId;
         const isAdmin = req.user.admin;
 
-        if (!result || (!isAdmin && result.idUser !== userId)) {
+        if (!result) {
             return res.status(404).send({
                 error: "Collection not found"
+            });
+        }
+
+        if (!isAdmin && result.idUser !== userId) {
+            return res.status(403).send({
+                error: "You can't delete this collection"
             });
         }
 
@@ -91,9 +97,15 @@ export const updateCollection = async (req, res) => {
         const userId = req.user.userId;
         const isAdmin = req.user.admin;
 
-        if (!result || (!isAdmin && result.idUser !== userId)) {
+        if (!result) {
             return res.status(404).send({
                 error: "Collection not found"
+            });
+        }
+
+        if (!isAdmin && result.idUser !== userId) {
+            return res.status(403).send({
+                error: "You can't update this collection"
             });
         }
 
@@ -103,10 +115,11 @@ export const updateCollection = async (req, res) => {
             });
         }
 
-        await db.update(collectionsTable).set(req.body).where(eq(collectionsTable.id, id)).returning();
+        const [updated] = await db.update(collectionsTable).set(req.body).where(eq(collectionsTable.id, id)).returning();
 
         res.status(200).send({
-            message: `Collection ${id} updated`
+            message: `Collection ${id} updated`,
+            collection: updated
         });
     } catch (error) {
         res.status(500).json({
