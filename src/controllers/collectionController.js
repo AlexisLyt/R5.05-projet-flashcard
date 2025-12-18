@@ -110,7 +110,7 @@ export const updateCollection = async (req, res) => {
         }
 
         if (Object.values(req.body).every(value => !value)) {
-            return res.status(404).send({
+            return res.status(400).send({
                 error: "You need to update at least one field"
             });
         }
