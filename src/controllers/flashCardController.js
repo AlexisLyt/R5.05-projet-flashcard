@@ -50,13 +50,17 @@ export const createFlashcard = async (req, res) => {
 export const getOneFlashcard = async (req, res) => {
     const { id } = req.params
     try {
+        const [flashcard] = await db.select().from(flashcardsTable)
+        .where(eq(flashcardsTable.id, id))
+
+        const collection = flashcard.idCollection
+
         const [collec] = await db.select().from(collectionsTable)
         .where(eq(collectionsTable.id, collection))
         if (!collec || (collec.visibility === "private" && !req.user.admin && collec.idUser !== req.user.userId)) {
-            return res.status(400).json({message : "Collection not found"})
+            return res.status(400).json({message : "Can't access the collection or collection not found"})
         } 
-        const [flashcard] = await db.select().from(flashcardsTable)
-        .where(eq(flashcardsTable.id, id))
+
         if (!flashcard) {
             return res.status(404).json({
                 message : "Flashcard not found"
@@ -80,7 +84,13 @@ export const getCollectionFlashcards = async (req, res) => {
     const { id } = req.params
     try {
         const flashcards = await db.select().from(flashcardsTable)
-            .where(eq(flashcardsTable.idCollection, id))
+        .where(eq(flashcardsTable.idCollection, id))
+        
+        const [collec] = await db.select().from(collectionsTable)
+        .where(eq(collectionsTable.id, id))
+        if (!collec || collec.visibility === "private") {
+            return res.status(400).json({message : "Can't access the collection or collection not found"})
+        } 
 
         if (!flashcards || flashcards.length === 0) {
             return res.status(404).json({
@@ -103,6 +113,12 @@ export const getCollectionFlashcards = async (req, res) => {
 export const getFlashCardsToRevise = async (req, res) => {
     const { id } = req.params
     try {
+        const [collec] = await db.select().from(collectionsTable)
+        .where(eq(collectionsTable.id, id))
+        if (!collec || (collec.visibility === "private" && !req.user.admin && collec.idUser !== req.user.userId)) {
+            return res.status(400).json({message : "Can't access the collection or collection not found"})
+        } 
+
         const flashcards = await db.select({
             idFlashcard : flashcardsTable.id,
             idCollection : flashcardsTable.idCollection,
@@ -154,6 +170,13 @@ export const updateFlashcard = async (req, res) => {
         .set({front : frontText, back : backText, urlFront : frontUrl, urlBack : backUrl})
         .where(eq(flashcardsTable.id, id))
         .returning()
+
+        const [collec] = await db.select().from(collectionsTable)
+        .where(eq(collectionsTable.id, flashcard.idCollection))
+        if (!collec || collec.idUser !== req.user.userId) {
+            return res.status(400).json({message : "Can't access the collection or collection not found"})
+        } 
+
         if (!flashcard) {
             return res.status(404).json({
                 message : "Flashcard not found"
@@ -180,6 +203,12 @@ export const deleteFlashcard = async (req, res) => {
         .where(eq(flashcardsTable.id, id))
         .returning()
 
+        const [collec] = await db.select().from(collectionsTable)
+        .where(eq(collectionsTable.id, flashcard.idCollection))
+        if (!collec || collec.idUser !== req.user.userId) {
+            return res.status(400).json({message : "Can't access the collection or collection not found"})
+        }         
+
         if (!flashcard) {
             return res.status(404).json({message : "Flashcard not found"})
         }
@@ -202,6 +231,13 @@ export const reviseFlashCard = async (req, res) => {
     const { level } = req.body
     const currDate = new Date()
     try {
+
+        const [flashcard] = await db.select().from(flashcardsTable)
+        .where(eq(flashcardsTable.id, revision.idFlashcard)).returning()
+
+        const [collec] = await db.select().from(collectionsTable)
+        .where(eq(collectionsTable.id, flashcard.idCollection))
+        
         const [revision] = await db.update(revisionsTable)
         .set({idLevel : level, latestDate : currDate})
         .where(eq(revisionsTable.idFlashcard, id))
@@ -210,10 +246,15 @@ export const reviseFlashCard = async (req, res) => {
         if (!revision) {
             return res.status(404).json({message : "Flashcard not found"})
         }
+        if (!collec) {
+            return res.status(400).json({message : "Collection not found"})
+        }
+
         return res.status(200).json({
             message : "Flashcard revised",
             latestDate : `${currDate}`
         })
+        
     } catch (error) {
         console.error(error)
         res.status(500).json({
