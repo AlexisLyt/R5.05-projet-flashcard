@@ -1,13 +1,14 @@
 import { Router } from "express"
-
+import { editFlashCardSchema, flashcardSchema, idSchema, reviseSchema } from "../models/flashCard.js"
+import { validateBody, validateParams } from "../middleware/validation.js"
+import { createFlashcard, deleteFlashcard, getCollectionFlashcards, getFlashCardsToRevise, getOneFlashcard, reviseFlashCard, updateFlashcard } from "../controllers/flashCardController.js"
 const router = Router()
 
-router.post("/", () => console.log("create flashcard")) //TODO : createFlashcard
-router.get("/:id", () => console.log("get a flashcard")) //TODO : getOneFlashcard
-router.get("/collection/:id", () => console.log("get flashcards from collection")) //TODO : getCollectionFlashcards
-router.get("/collection/:id/revise", () => console.log("get flashcard to revise from a collection")) //TODO : getFlashCardsToRevise
-router.patch("/:id", () => console.log("update flashcard")) //TODO : updateFlashcard
-router.delete("/:id", () => console.log("delete flashcard")) //TODO : deleteFlashcard
-router.post("/revise/:id", () => console.log("revise flashcard")) //TODO : reviseFlashCard
-
+router.post("/", validateBody(flashcardSchema), createFlashcard)
+router.get("/:id", validateParams(idSchema), getOneFlashcard)
+router.get("/collection/:id", validateParams(idSchema), getCollectionFlashcards)
+router.get("/collection/:id/revise",validateParams(idSchema), getFlashCardsToRevise)
+router.patch("/:id", validateBody(editFlashCardSchema), validateParams(idSchema), updateFlashcard)
+router.delete("/:id", validateParams(idSchema), deleteFlashcard)
+router.post("/revise/:id", validateParams(idSchema), validateBody(reviseSchema), reviseFlashCard)
 export default router
